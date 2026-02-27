@@ -18,12 +18,12 @@ Signalist is a Next.js application that lets users sign up, track a personalized
 ```bash
 git clone https://github.com/arthurpvicente/Real-Time-Stock.git
 
-cd stock-market-app
+cd real-time-stock
 ```
 
 **Installation**
 
-Install npm dependecies
+Install npm dependecies:
 
 ```bash
 npm install
@@ -82,3 +82,22 @@ npx inngest-cli@latest dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to view the projec.
 
+## Deployment Troubleshooting:
+
+### 1.Error on Vercel (build log):
+```bash
+MONGODB_URI must be set within .env
+...
+> Build error occurred
+[Error: Failed to collect page data for /] { type: 'Error' }
+``` 
+### How to fix on **Vercel**
+1. Go to Vercel dashboard → Project → Settings → Environment Variables.
+
+2. Add: 
+    - **Name:**`npm run build`
+    - **Value:** same value locally in `.env`
+
+3. Also add any other required API keys.
+
+4. **Redeploy** the project.
