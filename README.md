@@ -1,16 +1,29 @@
-# Stock Market 
+# Signalist - AI-Powered Stock Market Tracker
+Signalist is a full-stack stock tracking web application built with Next.js.
+It allows users to create accounts, manage a personalized watchlist, view real-time stock data, and receive AI-powered news summaries and automated emails.
 
-Signalist is a Next.js application that lets users sign up, track a personalized watchlist, explore stock details, and receive AI‑powered news summaries and welcome emails.
+## 1. Project Overview
+The goal of this project was to build a production-style stock tracking application using modern full-stack technologies, external APIs, and background job processing.
 
-## Tech Stack
+The application allow users to:
+
+- Register and authenticate securely
+- Track stocks in a personalized watchlist (**progress**)
+- View live stock market data
+- Read AI-generated stock news summaries
+- Trigger background jobs for asynchronous tasks
+
+## 2. Tech Stack
 
 - **Next.js 15**, **React 19**, **TypeScript**
 - **Better Auth** – email/password authentication
 - **MongoDB + Mongoose** – data storage (users, watchlist, alerts)
 - **Finnhub** – market/stock data
 - **Inngest** – background jobs (welcome emails, daily news)
-- **Resend + Nodemailer** – transactional emails
+- **Resend – transactional emails
 - **Tailwind CSS + Shadcn UI + Radix UI** – styling and components
+- Deployment:
+    - Vercel
 
 
 **Cloning the Repository**
@@ -21,29 +34,32 @@ git clone https://github.com/arthurpvicente/Real-Time-Stock.git
 cd real-time-stock
 ```
 
+## 3. System Architecture
+Architecture Components:
+- Client-side React components for UI
+- Server-side data fetching using Next.js App Router
+- MongoDB Atlas for persistent storage
+- Inngest for event-driven background processing
+- External APIs for stock data and AI summarization
+
+The system follows a modular structure separating:
+- Authentication logic
+- Database models
+- API integration
+- Background job handlers
+
 **Installation**
 
 Install npm dependecies:
 
 ```bash
 npm install
-```
-```bash
 npm install mongodb
-```
-```bash
 npm install install resend
-```
-```bash
 npx inggest-cli@latest dev 
-```
-```bash
 npx shadcn@latest add sonner
-```
-```bash
 npx inggest-cli@latest dev
-```
-```bash
+
 npm install -D tailwindcss postcss autoprefixer\nnpx tailwindcss init -p\n
 ```
 
