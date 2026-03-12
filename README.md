@@ -3,12 +3,13 @@ Signalist is a full-stack stock tracking web application built with Next.js.
 It allows users to create accounts, manage a personalized watchlist, view real-time stock data, and receive AI-powered news summaries and automated emails.
 
 ## 1. Project Overview
-The goal of this project was to build a production-style stock tracking application using modern full-stack technologies, external APIs, and background job processing.
 
-The application allow users to:
+The goal of this project is to build a production-style stock tracking application using modern full-stack technologies, external APIs, and background job processing.
+
+The application allows users to:
 
 - Register and authenticate securely
-- Track stocks in a personalized watchlist (**progress**)
+- Track stocks in a personalized watchlist (**`in progress`**)
 - View live stock market data
 - Read AI-generated stock news summaries
 - Trigger background jobs for asynchronous tasks
@@ -20,18 +21,16 @@ The application allow users to:
 - **MongoDB + Mongoose** – data storage (users, watchlist, alerts)
 - **Finnhub** – market/stock data
 - **Inngest** – background jobs (welcome emails, daily news)
-- **Resend – transactional emails
+- **Resend** – transactional emails
 - **Tailwind CSS + Shadcn UI + Radix UI** – styling and components
-- Deployment:
-    - Vercel
-
+- **Deployment**:
+  - Vercel
 
 **Cloning the Repository**
 
 ```bash
 git clone https://github.com/arthurpvicente/Real-Time-Stock.git
-
-cd real-time-stock
+cd Real-Time-Stock
 ```
 
 ## 3. System Architecture
@@ -50,17 +49,18 @@ The system follows a modular structure separating:
 
 **Installation**
 
-Install npm dependecies:
+Install npm dependencies:
 
 ```bash
 npm install
 npm install mongodb
-npm install install resend
+npm install resend
 npx inggest-cli@latest dev 
 npx shadcn@latest add sonner
-npx inggest-cli@latest dev
-
-npm install -D tailwindcss postcss autoprefixer\nnpx tailwindcss init -p\n
+```
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
 ```
 
 **Set Up Environment Variables**
@@ -72,7 +72,7 @@ NODE_ENV='development'
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 # FINNHUB
-NEXT_PUBLIC_NEXT_PUBLIC_FINNHUB_API_KEY=
+NEXT_PUBLIC_PUBLIC_FINNHUB_API_KEY=
 FINNHUB_BASE_URL=https://finnhub.io/api/v1
 
 # MONGODB
@@ -96,11 +96,11 @@ npm run dev
 npx inngest-cli@latest dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the projec.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the project.
 
 ## Deployment Troubleshooting:
 
-### 1.Error on Vercel (build log):
+### 1. Error on Vercel (build log):
 ```bash
 MONGODB_URI must be set within .env
 ...
@@ -111,9 +111,9 @@ MONGODB_URI must be set within .env
 1. Go to Vercel dashboard → Project → Settings → Environment Variables.
 
 2. Add: 
-    - **Name:**`npm run build`
+    - **Name:** `MONGODB_URI`
     - **Value:** same value locally in `.env`
 
-3. Also add any other required API keys.
+3. Also add any other required API keys (E.G `NEXT_PUBLIC_FINNHUB_API_KEY`, `RESEND_API_KEY`, etc).
 
 4. **Redeploy** the project.
