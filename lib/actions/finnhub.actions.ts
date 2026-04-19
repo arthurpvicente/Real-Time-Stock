@@ -98,6 +98,23 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
   }
 }
 
+export async function searchStocksForUser(query?: string): Promise<StockWithWatchlistStatus[]> {
+  const { auth } = await import('@/lib/better-auth/auth');
+  const { headers } = await import('next/headers');
+  const { getWatchlistSymbolsByEmail } = await import('@/lib/actions/watchlist.actions');
+
+  const [stocks, session] = await Promise.all([
+    searchStocks(query),
+    auth.api.getSession({ headers: await headers() }),
+  ]);
+
+  if (!session?.user) return stocks;
+
+  const watchlistSymbols = await getWatchlistSymbolsByEmail(session.user.email);
+  const symbolSet = new Set(watchlistSymbols);
+  return stocks.map((s) => ({ ...s, isInWatchlist: symbolSet.has(s.symbol) }));
+}
+
 export async function getStockProfile(symbol: string): Promise<{ name?: string; ticker?: string } | null> {
   try {
     const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;

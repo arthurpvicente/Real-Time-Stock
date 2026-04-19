@@ -2,10 +2,20 @@ import Link from "next/link";
 import Image from "next/image";
 import NavItems from "@/components/NavItems";
 import UserDropdown from "@/components/UserDropdown";
-import {searchStocks} from "@/lib/actions/finnhub.actions";
+import { searchStocks } from "@/lib/actions/finnhub.actions";
+import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 
 const Header = async ({ user }: { user: User }) => {
-    const initialStocks = await searchStocks();
+    const [initialStocks, watchlistSymbols] = await Promise.all([
+        searchStocks(),
+        getWatchlistSymbolsByEmail(user.email),
+    ]);
+
+    const symbolSet = new Set(watchlistSymbols);
+    const enrichedStocks = initialStocks.map((s) => ({
+        ...s,
+        isInWatchlist: symbolSet.has(s.symbol),
+    }));
 
     return (
         <header className="sticky top-0 header">
@@ -14,10 +24,10 @@ const Header = async ({ user }: { user: User }) => {
                     <Image src="/assets/icons/stocks.svg" alt="Stocks logo" width={140} height={32} className="h-8 w-auto cursor-pointer" />
                 </Link>
                 <nav className="hidden sm:block">
-                    <NavItems initialStocks={initialStocks} />
+                    <NavItems initialStocks={enrichedStocks} />
                 </nav>
 
-                <UserDropdown user={user} initialStocks={initialStocks} />
+                <UserDropdown user={user} initialStocks={enrichedStocks} />
             </div>
         </header>
     )
