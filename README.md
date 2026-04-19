@@ -9,10 +9,12 @@ The goal of this project is to build a production-style stock tracking applicati
 The application allows users to:
 
 - Register and authenticate securely
-- Track stocks in a personalized watchlist (**`in progress`**)
+- Track stocks in a personalized watchlist
 - View live stock market data
 - Read AI-generated stock news summaries
 - Trigger background jobs for asynchronous tasks
+- Add/remove stocks from watchlist with live star button in search
+- View watchlist page with live prices and % change
 
 ## 2. Tech Stack
 
