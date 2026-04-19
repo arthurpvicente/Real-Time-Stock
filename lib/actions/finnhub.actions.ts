@@ -98,6 +98,45 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
   }
 }
 
+export async function searchStocksForUser(query?: string): Promise<StockWithWatchlistStatus[]> {
+  const { auth } = await import('@/lib/better-auth/auth');
+  const { headers } = await import('next/headers');
+  const { getWatchlistSymbolsByEmail } = await import('@/lib/actions/watchlist.actions');
+
+  const [stocks, session] = await Promise.all([
+    searchStocks(query),
+    auth.api.getSession({ headers: await headers() }),
+  ]);
+
+  if (!session?.user) return stocks;
+
+  const watchlistSymbols = await getWatchlistSymbolsByEmail(session.user.email);
+  const symbolSet = new Set(watchlistSymbols);
+  return stocks.map((s) => ({ ...s, isInWatchlist: symbolSet.has(s.symbol) }));
+}
+
+export async function getStockProfile(symbol: string): Promise<{ name?: string; ticker?: string } | null> {
+  try {
+    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) return null;
+    const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${encodeURIComponent(symbol.toUpperCase())}&token=${token}`;
+    return await fetchJSON<{ name?: string; ticker?: string }>(url, 3600);
+  } catch {
+    return null;
+  }
+}
+
+export async function getStockQuote(symbol: string): Promise<QuoteData | null> {
+  try {
+    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) return null;
+    const url = `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(symbol.toUpperCase())}&token=${token}`;
+    return await fetchJSON<QuoteData>(url);
+  } catch {
+    return null;
+  }
+}
+
 export const searchStocks = cache(async (query?: string): Promise<StockWithWatchlistStatus[]> => {
   try {
     const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
