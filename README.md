@@ -1,4 +1,4 @@
-# Signalist - AI-Powered Stock Market Tracker
+# Signalist - Stock Market Tracker
 Signalist is a full-stack stock tracking web application built with Next.js.
 It allows users to create accounts, manage a personalized watchlist, view real-time stock data, and receive AI-powered news summaries and automated emails.
 
