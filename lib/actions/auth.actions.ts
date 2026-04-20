@@ -4,9 +4,9 @@ import {auth} from "@/lib/better-auth/auth";
 import {inngest} from "@/lib/inngest/client";
 import {headers} from "next/headers";
 
-export const signUpWithEmail = async ({ email, password, fullName, country, investmentGoals, riskTolerance, preferredIndustry }: SignUpFormData) => {
+export const signUpWithEmail = async ({ email, password, fullName, country, investmentGoals, riskTolerance, preferredIndustry, image }: SignUpFormData) => {
     try {
-        const response = await auth.api.signUpEmail({ body: { email, password, name: fullName } })
+        const response = await auth.api.signUpEmail({ body: { email, password, name: fullName, image: image || null } })
 
         if(response) {
             try {
@@ -37,6 +37,16 @@ export const signInWithEmail = async ({ email, password }: SignInFormData) => {
         console.error('Sign in failed', e)
         const message = e instanceof Error ? e.message : 'Sign in failed';
         return { success: false, error: message }
+    }
+}
+
+export const updateUserImage = async (imageUrl: string) => {
+    try {
+        await auth.api.updateUser({ body: { image: imageUrl }, headers: await headers() });
+        return { success: true };
+    } catch (e) {
+        console.error('Update image failed', e);
+        return { success: false, error: e instanceof Error ? e.message : 'Failed to update image' };
     }
 }
 

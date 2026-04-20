@@ -58,16 +58,30 @@ const SignUp = () => {
                 <InputField
                     name="fullName"
                     label="Full Name"
-                    placeholder="John Doe"
+                    placeholder="Alex Rivera"
                     register={register}
                     error={errors.fullName}
                     validation={{ required: 'Full name is required', minLength: 2 }}
                 />
 
                 <InputField
+                    name="image"
+                    label="Profile Picture URL (optional)"
+                    placeholder="https://example.com/your-photo.jpg"
+                    register={register}
+                    error={errors.image}
+                    validation={{
+                        pattern: {
+                            value: /^https?:\/\/.+/,
+                            message: 'Must be a valid URL starting with http:// or https://'
+                        }
+                    }}
+                />
+
+                <InputField
                     name="email"
                     label="Email"
-                    placeholder="contact@jsmastery.com"
+                    placeholder="alexrivera@gmail.com"
                     register={register}
                     error={errors.email}
                     validation={{ required: 'Email is required', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Enter a valid email address' } }}
