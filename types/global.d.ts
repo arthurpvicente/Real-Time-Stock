@@ -12,6 +12,7 @@ declare global {
         investmentGoals: string;
         riskTolerance: string;
         preferredIndustry: string;
+        image?: string;
     };
 
     type CountrySelectProps = {
@@ -71,6 +72,7 @@ declare global {
         id: string;
         name: string;
         email: string;
+        image?: string | null;
     };
 
     type Stock = {
