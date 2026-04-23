@@ -1,5 +1,4 @@
-# Signalist — Real-Time Stock Tracker
-
+# Signalist - Stock Market Tracker
 Signalist is a full-stack stock tracking web application built with Next.js.
 It allows users to create accounts, manage a personalized watchlist, view real-time stock data, and receive AI-powered news summaries and automated emails.
 
@@ -9,15 +8,13 @@ The goal of this project is to build a production-style stock tracking applicati
 
 The application allows users to:
 
-- Register and authenticate securely with email/password
-- Complete an investor profile on sign-up (country, investment goals, risk tolerance, preferred industry)
-- Upload a profile picture via URL during sign-up
+- Register and authenticate securely
 - Track stocks in a personalized watchlist
-- Add/remove stocks from watchlist with a live star button in search results
-- View a watchlist page with live prices and % change
-- View individual stock detail pages with TradingView charts
+- View live stock market data
 - Read AI-generated stock news summaries
-- Receive a welcome email triggered on account creation via background jobs
+- Trigger background jobs for asynchronous tasks
+- Add/remove stocks from watchlist with live star button in search
+- View watchlist page with live prices and % change
 
 ## 2. Tech Stack
 
