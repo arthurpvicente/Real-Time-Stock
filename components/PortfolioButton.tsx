@@ -18,7 +18,7 @@ const WatchlistButton = ({
   const label = useMemo(() => {
     if (type === "icon") return "";
     if (isPending) return added ? "Removing..." : "Adding...";
-    return added ? "Remove from Watchlist" : "Add to Watchlist";
+    return added ? "Remove" : "Add to Watchlist";
   }, [added, type, isPending]);
 
   const handleClick = () => {

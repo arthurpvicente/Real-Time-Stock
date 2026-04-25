@@ -4,6 +4,7 @@ import { auth } from '@/lib/better-auth/auth';
 import { headers } from 'next/headers';
 import { connectToDatabase } from '@/database/mongoose';
 import { Watchlist } from '@/database/models/watchlist.model';
+import { Portfolio } from '@/database/models/portfolio.model';
 
 export async function getWatchlistSymbolsByEmail(email: string): Promise<string[]> {
   if (!email) return [];
@@ -53,7 +54,10 @@ export async function removeFromWatchlistAction(symbol: string): Promise<{ succe
 
   try {
     await connectToDatabase();
-    await Watchlist.deleteOne({ userId: session.user.id, symbol: symbol.toUpperCase() });
+    await Promise.all([
+      Watchlist.deleteOne({ userId: session.user.id, symbol: symbol.toUpperCase() }),
+      Portfolio.deleteOne({ userId: session.user.id, symbol: symbol.toUpperCase() }),
+    ]);
     return { success: true };
   } catch (err) {
     console.error('removeFromWatchlist error:', err);

@@ -1,7 +1,7 @@
 export const NAV_ITEMS = [
     { href: '/', label: 'Dashboard' },
     { href: '/search', label: 'Search' },
-    { href: '/watchlist', label: 'Watchlist' },
+    { href: '/watchlist', label: 'Portfolio' },
 ];
 
 // Sign-up form select options
@@ -332,8 +332,8 @@ export const WATCHLIST_TABLE_HEADER = [
     'Symbol',
     'Price',
     'Change',
-    'Market Cap',
-    'P/E Ratio',
-    'Alert',
+    'Shares',
+    'Buy Price',
+    'Gain / Loss',
     'Action',
 ];
