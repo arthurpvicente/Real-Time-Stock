@@ -1,9 +1,9 @@
 "use client";
 import React, { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { addToWatchlistAction, removeFromWatchlistAction } from "@/lib/actions/watchlist.actions";
+import { addToPortfolioAction, removeFromPortfolioAction } from "@/lib/actions/portfolio.actions";
 
-const WatchlistButton = ({
+const PortfolioButton = ({
   symbol,
   company,
   isInWatchlist,
@@ -18,19 +18,19 @@ const WatchlistButton = ({
   const label = useMemo(() => {
     if (type === "icon") return "";
     if (isPending) return added ? "Removing..." : "Adding...";
-    return added ? "Remove from Watchlist" : "Add to Watchlist";
+    return added ? "Remove" : "Add to Portfolio";
   }, [added, type, isPending]);
 
   const handleClick = () => {
     const next = !added;
-    setAdded(next); // optimistic update
+    setAdded(next);
     startTransition(async () => {
       const result = next
-        ? await addToWatchlistAction(symbol, company)
-        : await removeFromWatchlistAction(symbol);
+        ? await addToPortfolioAction(symbol, company)
+        : await removeFromPortfolioAction(symbol);
 
       if (!result.success) {
-        setAdded(!next); // revert on error
+        setAdded(!next);
       } else {
         onWatchlistChange?.(symbol, next);
         router.refresh();
@@ -41,8 +41,8 @@ const WatchlistButton = ({
   if (type === "icon") {
     return (
       <button
-        title={added ? `Remove ${symbol} from watchlist` : `Add ${symbol} to watchlist`}
-        aria-label={added ? `Remove ${symbol} from watchlist` : `Add ${symbol} to watchlist`}
+        title={added ? `Remove ${symbol} from portfolio` : `Add ${symbol} to portfolio`}
+        aria-label={added ? `Remove ${symbol} from portfolio` : `Add ${symbol} to portfolio`}
         className={`watchlist-icon-btn ${added ? "watchlist-icon-added" : ""}`}
         onClick={handleClick}
         disabled={isPending}
@@ -88,4 +88,4 @@ const WatchlistButton = ({
   );
 };
 
-export default WatchlistButton;
+export default PortfolioButton;

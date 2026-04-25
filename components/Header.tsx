@@ -3,15 +3,15 @@ import Image from "next/image";
 import NavItems from "@/components/NavItems";
 import UserDropdown from "@/components/UserDropdown";
 import { searchStocks } from "@/lib/actions/finnhub.actions";
-import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
+import { getPortfolioSymbolsByEmail } from "@/lib/actions/portfolio.actions";
 
 const Header = async ({ user }: { user: User }) => {
-    const [initialStocks, watchlistSymbols] = await Promise.all([
+    const [initialStocks, portfolioSymbols] = await Promise.all([
         searchStocks(),
-        getWatchlistSymbolsByEmail(user.email),
+        getPortfolioSymbolsByEmail(user.email),
     ]);
 
-    const symbolSet = new Set(watchlistSymbols);
+    const symbolSet = new Set(portfolioSymbols);
     const enrichedStocks = initialStocks.map((s) => ({
         ...s,
         isInWatchlist: symbolSet.has(s.symbol),
