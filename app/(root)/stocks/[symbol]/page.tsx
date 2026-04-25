@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import TradingViewWidget from "@/components/TradingViewWidget";
-import WatchlistButton from "@/components/WatchlistButton";
+import PortfolioButton from "@/components/PortfolioButton";
 import { auth } from "@/lib/better-auth/auth";
-import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
+import { getPortfolioSymbolsByEmail } from "@/lib/actions/portfolio.actions";
 import { getStockProfile } from "@/lib/actions/finnhub.actions";
 import {
   SYMBOL_INFO_WIDGET_CONFIG,
@@ -20,12 +20,12 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
 
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const [watchlistSymbols, profile] = await Promise.all([
-    session?.user ? getWatchlistSymbolsByEmail(session.user.email) : Promise.resolve([]),
+  const [portfolioSymbols, profile] = await Promise.all([
+    session?.user ? getPortfolioSymbolsByEmail(session.user.email) : Promise.resolve([]),
     getStockProfile(upperSymbol),
   ]);
 
-  const isInWatchlist = watchlistSymbols.includes(upperSymbol);
+  const isInWatchlist = portfolioSymbols.includes(upperSymbol);
   const company = profile?.name || upperSymbol;
 
   return (
@@ -57,7 +57,7 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
         {/* Right column */}
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <WatchlistButton
+            <PortfolioButton
               symbol={upperSymbol}
               company={company}
               isInWatchlist={isInWatchlist}
