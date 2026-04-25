@@ -113,6 +113,8 @@ declare global {
         onWatchlistChange?: (symbol: string, isAdded: boolean) => void;
     };
 
+    type PortfolioButtonProps = WatchlistButtonProps;
+
     type QuoteData = {
         c?: number;
         dp?: number;

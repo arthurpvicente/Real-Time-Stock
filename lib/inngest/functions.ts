@@ -2,7 +2,7 @@ import {inngest} from "@/lib/inngest/client";
 import {NEWS_SUMMARY_EMAIL_PROMPT, PERSONALIZED_WELCOME_EMAIL_PROMPT} from "@/lib/inngest/prompts";
 import {sendNewsSummaryEmail, sendWelcomeEmail} from "@/lib/resend";
 import {getAllUsersForNewsEmail} from "@/lib/actions/user.actions";
-import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
+import { getPortfolioSymbolsByEmail } from "@/lib/actions/portfolio.actions";
 import { getNews } from "@/lib/actions/finnhub.actions";
 import { getFormattedTodayDate } from "@/lib/utils";
 
@@ -60,7 +60,7 @@ export const sendDailyNewsSummary = inngest.createFunction(
             const perUser: Array<{ user: UserForNewsEmail; articles: MarketNewsArticle[] }> = [];
             for (const user of users as UserForNewsEmail[]) {
                 try {
-                    const symbols = await getWatchlistSymbolsByEmail(user.email);
+                    const symbols = await getPortfolioSymbolsByEmail(user.email);
                     let articles = await getNews(symbols);
                     // Enforce max 6 articles per user
                     articles = (articles || []).slice(0, 6);

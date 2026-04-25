@@ -101,7 +101,7 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
 export async function searchStocksForUser(query?: string): Promise<StockWithWatchlistStatus[]> {
   const { auth } = await import('@/lib/better-auth/auth');
   const { headers } = await import('next/headers');
-  const { getWatchlistSymbolsByEmail } = await import('@/lib/actions/watchlist.actions');
+  const { getPortfolioSymbolsByEmail: getWatchlistSymbolsByEmail } = await import('@/lib/actions/portfolio.actions');
 
   const [stocks, session] = await Promise.all([
     searchStocks(query),

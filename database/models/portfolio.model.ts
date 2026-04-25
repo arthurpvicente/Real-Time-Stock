@@ -1,13 +1,13 @@
 import { Schema, model, models, type Document, type Model } from 'mongoose';
 
-export interface WatchlistItem extends Document {
+export interface PortfolioItem extends Document {
   userId: string;
   symbol: string;
   company: string;
   addedAt: Date;
 }
 
-const WatchlistSchema = new Schema<WatchlistItem>(
+const PortfolioSchema = new Schema<PortfolioItem>(
   {
     userId: { type: String, required: true, index: true },
     symbol: { type: String, required: true, uppercase: true, trim: true },
@@ -17,8 +17,7 @@ const WatchlistSchema = new Schema<WatchlistItem>(
   { timestamps: false }
 );
 
-// Prevent duplicate symbols per user
-WatchlistSchema.index({ userId: 1, symbol: 1 }, { unique: true });
+PortfolioSchema.index({ userId: 1, symbol: 1 }, { unique: true });
 
-export const Watchlist: Model<WatchlistItem> =
-  (models?.Watchlist as Model<WatchlistItem>) || model<WatchlistItem>('Watchlist', WatchlistSchema);
+export const Portfolio: Model<PortfolioItem> =
+  (models?.Portfolio as Model<PortfolioItem>) || model<PortfolioItem>('Portfolio', PortfolioSchema);
