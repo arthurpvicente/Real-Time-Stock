@@ -23,7 +23,7 @@
 8. [Database Schema](#8-database-schema)
 9. [Server Actions Reference](#9-server-actions-reference)
 10. [Background Jobs](#10-background-jobs)
-12. [Troubleshooting](#12-troubleshooting)
+12. [Troubleshooting](#11-troubleshooting)
 
 ---
 
