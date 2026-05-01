@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/better-auth/auth";
 import { getPortfolioItems } from "@/lib/actions/portfolio.actions";
 import { getHoldings } from "@/lib/actions/holdings.actions";
-import { getStockQuote } from "@/lib/actions/finnhub.actions";
+import { getStockQuote, getHistoricalClose } from "@/lib/actions/finnhub.actions";
 import { WATCHLIST_TABLE_HEADER } from "@/lib/constants";
 import PortfolioButton from "@/components/PortfolioButton";
 import AddHoldingButton from "@/components/AddHoldingButton";
@@ -52,21 +52,41 @@ export default async function PortfolioPage() {
 
   const itemsWithData = await Promise.all(
     items.map(async (item) => {
-      const quote = await getStockQuote(item.symbol);
       const holding = holdingsMap.get(item.symbol);
-      return { ...item, quote, holding: holding ?? null };
+      const [quote, close1M] = await Promise.all([
+        getStockQuote(item.symbol),
+        holding ? getHistoricalClose(item.symbol, 30) : Promise.resolve(null),
+      ]);
+      return { ...item, quote, holding: holding ?? null, close1M };
     })
   );
 
   let totalInvested = 0;
   let currentValue = 0;
-  for (const { quote, holding } of itemsWithData) {
+  let total1DGainLoss = 0;
+  let total1MGainLoss = 0;
+  let has1DData = false;
+  let has1MData = false;
+
+  for (const { quote, holding, close1M } of itemsWithData) {
     if (!holding) continue;
     totalInvested += holding.shares * holding.buyPrice;
-    if (quote?.c != null) currentValue += holding.shares * quote.c;
+    if (quote?.c != null) {
+      currentValue += holding.shares * quote.c;
+      if (quote.pc != null) {
+        total1DGainLoss += holding.shares * (quote.c - quote.pc);
+        has1DData = true;
+      }
+      if (close1M != null) {
+        total1MGainLoss += holding.shares * (quote.c - close1M);
+        has1MData = true;
+      }
+    }
   }
   const totalGainLoss = currentValue - totalInvested;
   const totalGainLossPct = totalInvested > 0 ? (totalGainLoss / totalInvested) * 100 : null;
+  const total1DGainLossPct = totalInvested > 0 && has1DData ? (total1DGainLoss / totalInvested) * 100 : null;
+  const total1MGainLossPct = totalInvested > 0 && has1MData ? (total1MGainLoss / totalInvested) * 100 : null;
   const hasAnyHolding = holdings.length > 0;
 
   return (
@@ -75,30 +95,66 @@ export default async function PortfolioPage() {
       <h1 className="watchlist-title">My Portfolio</h1>
 
       {hasAnyHolding && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Invested</p>
-            <p className="text-xl font-mono font-semibold text-gray-100">
-              ${totalInvested.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </p>
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Invested</p>
+              <p className="text-xl font-mono font-semibold text-gray-100">
+                ${totalInvested.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Current Value</p>
+              <p className="text-xl font-mono font-semibold text-gray-100">
+                ${currentValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Overall Gain / Loss</p>
+              <p className={`text-xl font-mono font-semibold ${totalGainLoss >= 0 ? "text-teal-400" : "text-red-500"}`}>
+                {totalGainLoss >= 0 ? "+" : ""}$
+                {Math.abs(totalGainLoss).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {totalGainLossPct !== null && (
+                  <span className="text-sm ml-2">
+                    ({totalGainLossPct >= 0 ? "+" : ""}{totalGainLossPct.toFixed(2)}%)
+                  </span>
+                )}
+              </p>
+            </div>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Current Value</p>
-            <p className="text-xl font-mono font-semibold text-gray-100">
-              ${currentValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </p>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Overall Gain / Loss</p>
-            <p className={`text-xl font-mono font-semibold ${totalGainLoss >= 0 ? "text-teal-400" : "text-red-500"}`}>
-              {totalGainLoss >= 0 ? "+" : ""}$
-              {Math.abs(totalGainLoss).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              {totalGainLossPct !== null && (
-                <span className="text-sm ml-2">
-                  ({totalGainLossPct >= 0 ? "+" : ""}{totalGainLossPct.toFixed(2)}%)
-                </span>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Today&apos;s Gain / Loss</p>
+              {has1DData ? (
+                <p className={`text-xl font-mono font-semibold ${total1DGainLoss >= 0 ? "text-teal-400" : "text-red-500"}`}>
+                  {total1DGainLoss >= 0 ? "+" : ""}$
+                  {Math.abs(total1DGainLoss).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {total1DGainLossPct !== null && (
+                    <span className="text-sm ml-2">
+                      ({total1DGainLossPct >= 0 ? "+" : ""}{total1DGainLossPct.toFixed(2)}%)
+                    </span>
+                  )}
+                </p>
+              ) : (
+                <p className="text-xl font-mono font-semibold text-gray-500">—</p>
               )}
-            </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">1-Month Gain / Loss</p>
+              {has1MData ? (
+                <p className={`text-xl font-mono font-semibold ${total1MGainLoss >= 0 ? "text-teal-400" : "text-red-500"}`}>
+                  {total1MGainLoss >= 0 ? "+" : ""}$
+                  {Math.abs(total1MGainLoss).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {total1MGainLossPct !== null && (
+                    <span className="text-sm ml-2">
+                      ({total1MGainLossPct >= 0 ? "+" : ""}{total1MGainLossPct.toFixed(2)}%)
+                    </span>
+                  )}
+                </p>
+              ) : (
+                <p className="text-xl font-mono font-semibold text-gray-500">—</p>
+              )}
+            </div>
           </div>
         </div>
       )}
