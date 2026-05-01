@@ -126,6 +126,24 @@ export async function getStockProfile(symbol: string): Promise<{ name?: string; 
   }
 }
 
+export async function getHistoricalClose(symbol: string, daysAgo: number): Promise<number | null> {
+  try {
+    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) return null;
+    const now = Math.floor(Date.now() / 1000);
+    const to = now - (daysAgo - 2) * 86400;
+    const from = now - (daysAgo + 5) * 86400;
+    const url = `${FINNHUB_BASE_URL}/stock/candle?symbol=${encodeURIComponent(symbol.toUpperCase())}&resolution=D&from=${from}&to=${to}&token=${token}`;
+    const data = await fetchJSON<{ c?: number[]; s?: string }>(url, 3600);
+    if (data?.s === 'ok' && Array.isArray(data.c) && data.c.length > 0) {
+      return data.c[data.c.length - 1];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getStockQuote(symbol: string): Promise<QuoteData | null> {
   try {
     const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;

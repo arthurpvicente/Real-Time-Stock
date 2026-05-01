@@ -117,6 +117,7 @@ declare global {
 
     type QuoteData = {
         c?: number;
+        pc?: number;
         dp?: number;
     };
 
